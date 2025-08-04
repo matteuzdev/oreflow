@@ -17,9 +17,8 @@ const navItems = [
   { text: 'Produção', icon: <FaChartLine />, to: '/producao' },
   { text: 'Vendas', icon: <FaShoppingCart />, to: '/vendas' },
   { text: 'Clientes', icon: <FaUsers />, to: '/clientes' },
-  // Adicionando as duas rotas administrativas
-  { text: 'Settings', icon: <FaCog />, to: '/settings', adminOnly: true },
-  { text: 'Configurações', icon: <FaCog />, to: '/configuracoes', adminOnly: true },
+  // Rota administrativa de gestão
+  { text: 'Gestão', icon: <FaCog />, to: '/gestao', adminOnly: true },
 ]
 
 export default function Sidebar() {

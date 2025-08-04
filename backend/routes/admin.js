@@ -33,6 +33,65 @@ router.put('/organization', (req, res) => {
   );
 });
 
+// --- Configurações adicionais ---
+
+// Obter configurações de notificações
+router.get('/settings/notifications', (req, res) => {
+  db.get(
+    `SELECT email_notifications, sms_notifications FROM settings WHERE organization_id = ?`,
+    [req.organization_id],
+    (err, row) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json(row || { email_notifications: 0, sms_notifications: 0 });
+    }
+  );
+});
+
+// Atualizar configurações de notificações
+router.put('/settings/notifications', (req, res) => {
+  const { email_notifications = 0, sms_notifications = 0 } = req.body;
+  db.run(
+    `INSERT INTO settings (organization_id, email_notifications, sms_notifications)
+     VALUES (?, ?, ?)
+     ON CONFLICT(organization_id) DO UPDATE SET
+       email_notifications = excluded.email_notifications,
+       sms_notifications = excluded.sms_notifications`,
+    [req.organization_id, email_notifications, sms_notifications],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'Configurações de notificações atualizadas' });
+    }
+  );
+});
+
+// Obter configurações de alertas
+router.get('/settings/alerts', (req, res) => {
+  db.get(
+    `SELECT alert_low_stock FROM settings WHERE organization_id = ?`,
+    [req.organization_id],
+    (err, row) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json(row || { alert_low_stock: 0 });
+    }
+  );
+});
+
+// Atualizar configurações de alertas
+router.put('/settings/alerts', (req, res) => {
+  const { alert_low_stock = 0 } = req.body;
+  db.run(
+    `INSERT INTO settings (organization_id, alert_low_stock)
+     VALUES (?, ?)
+     ON CONFLICT(organization_id) DO UPDATE SET
+       alert_low_stock = excluded.alert_low_stock`,
+    [req.organization_id, alert_low_stock],
+    function (err) {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ message: 'Configurações de alertas atualizadas' });
+    }
+  );
+});
+
 // --- Gerenciamento de Usuários ---
 
 // Listar usuários da organização

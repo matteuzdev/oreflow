@@ -12,7 +12,6 @@ import Vendas from '../pages/Vendas'
 import Clientes from '../pages/Clientes'
 import Profile from '../pages/Profile'
 import Gestao from '../pages/Gestao'
-import Configuracoes from "../pages/Configuracoes";
 
 import ForgotPassword from '../pages/ForgotPassword'
 import ResetPassword from '../pages/ResetPassword'
@@ -45,7 +44,6 @@ export default function AppRoutes() {
         <Route path="clientes" element={<Clientes />} />
         <Route path="profile" element={<Profile />} />
         <Route path="gestao" element={<AdminRoute><Gestao /></AdminRoute>} />
-        <Route path="configuracoes" element={<AdminRoute><Configuracoes /></AdminRoute>} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" />} />
