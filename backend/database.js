@@ -13,6 +13,16 @@ db.serialize(() => {
     logo_url TEXT
   )`);
 
+  // Tabela de configurações gerais da organização
+  db.run(`CREATE TABLE IF NOT EXISTS settings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    organization_id INTEGER UNIQUE,
+    email_notifications INTEGER DEFAULT 0,
+    sms_notifications INTEGER DEFAULT 0,
+    alert_low_stock INTEGER DEFAULT 0,
+    FOREIGN KEY(organization_id) REFERENCES organizations(id)
+  )`);
+
   // Tabela de usuários
   db.run(`CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import AppearanceForm from '../components/AppearanceForm'
 import UserManagement from '../components/UserManagement'
+import NotificationSettings from '../components/NotificationSettings'
+import AlertSettings from '../components/AlertSettings'
 
 export default function Gestao() {
   const [activeTab, setActiveTab] = useState('appearance')
@@ -34,12 +36,34 @@ export default function Gestao() {
             >
               Usuários
             </button>
+            <button
+              onClick={() => setActiveTab('notifications')}
+              className={`px-8 py-3 text-sm font-semibold transition focus:outline-none ${
+                activeTab === 'notifications'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-600 hover:bg-blue-50'
+              }`}
+            >
+              Notificações
+            </button>
+            <button
+              onClick={() => setActiveTab('alerts')}
+              className={`px-8 py-3 text-sm font-semibold transition focus:outline-none ${
+                activeTab === 'alerts'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-white text-gray-600 hover:bg-blue-50'
+              }`}
+            >
+              Alertas
+            </button>
           </nav>
         </div>
 
         <div className="bg-white p-10 rounded-2xl shadow-lg">
           {activeTab === 'appearance' && <AppearanceForm />}
           {activeTab === 'users' && <UserManagement />}
+          {activeTab === 'notifications' && <NotificationSettings />}
+          {activeTab === 'alerts' && <AlertSettings />}
         </div>
       </div>
     </div>
