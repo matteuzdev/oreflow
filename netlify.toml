@@ -1,0 +1,17 @@
+# Configuração para o Netlify com Functions
+
+[build]
+  # Diretório base do frontend
+  base    = "frontend"
+  # Comando para construir o frontend
+  command = "npm install && npm run build"
+  # Pasta de publicação do frontend
+  publish = "frontend/dist"
+  # Diretório onde as Netlify Functions estão localizadas
+  functions = "netlify/functions"
+
+# Redireciona todas as chamadas de API para a nossa função 'api'
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/api/:splat"
+  status = 200
