@@ -17,6 +17,4 @@ app.use('/api/clients', require('./routes/client'));
 app.use('/api/sales', require('./routes/sale'));
 
 const PORT = process.env.PORT || 3001;
-// app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
-
-module.exports = app;
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
