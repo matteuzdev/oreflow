@@ -43,10 +43,12 @@ export default function UserManagement() {
   const handleFormSubmit = async (data) => {
     try {
       if (selectedUser) {
+        // Rota para atualizar um usuário existente
         await api.put(`/admin/users/${selectedUser.id}`, data)
         toast.success('Usuário atualizado com sucesso!')
       } else {
-        await api.post('/admin/users/invite', data)
+        // Rota para convidar (criar) um novo usuário
+        await api.post('/admin/users', data)
         toast.success('Convite enviado com sucesso!')
       }
       fetchUsers()

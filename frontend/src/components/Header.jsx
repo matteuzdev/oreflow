@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { FaBars, FaUserCircle } from 'react-icons/fa'
 import { AuthContext } from '../contexts/AuthContext'
 import { ThemeContext } from '../contexts/ThemeContext'
+import NotificationBell from './NotificationBell'
 
 export default function Header() {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -35,15 +36,16 @@ export default function Header() {
         </h1>
       </div>
 
-      <div className="flex items-center">
-        <span className="mr-4 font-medium text-white hidden sm:block">{user?.name}</span>
+      <div className="flex items-center gap-4">
+        <NotificationBell />
+        <span className="mr-2 font-medium text-white hidden sm:block">{user?.name}</span>
         <div className="relative">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
             className="relative z-20 block h-10 w-10 rounded-full border-2 border-white shadow hover:ring-2 hover:ring-white transition"
           >
-            {user?.photo ? (
-              <img src={user.photo} alt="User" className="h-full w-full object-cover rounded-full" />
+            {user?.photo_url ? (
+              <img src={user.photo_url} alt="User" className="h-full w-full object-cover rounded-full" />
             ) : (
               <FaUserCircle className="h-full w-full text-white" />
             )}

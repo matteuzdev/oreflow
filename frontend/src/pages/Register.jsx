@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import { api } from '../services/api'
-import { FaRegGem } from "react-icons/fa"
+import { FaRegGem, FaEye, FaEyeSlash } from "react-icons/fa"
 import PasswordStrengthMeter from '../components/PasswordStrengthMeter'
 
 export default function Register() {
@@ -13,6 +13,7 @@ export default function Register() {
     email: '',
     password: ''
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
@@ -123,14 +124,23 @@ export default function Register() {
               <label htmlFor="password" className="block font-medium text-gray-700 mb-1">
                 Senha
               </label>
-              <input
-                id="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:outline-none text-gray-900 transition"
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-200 focus:outline-none text-gray-900 transition"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 hover:text-gray-700"
+                >
+                  {showPassword ? <FaEyeSlash /> : <FaEye />}
+                </button>
+              </div>
               <PasswordStrengthMeter password={formData.password} />
             </div>
             <button

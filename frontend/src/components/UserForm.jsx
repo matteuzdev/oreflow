@@ -4,7 +4,6 @@ import { ThemeContext } from '../contexts/ThemeContext'
 export default function UserForm({ user, onSubmit, onCancel }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [role, setRole] = useState('user')
   const { theme } = useContext(ThemeContext)
   const primary = theme?.primaryColor || '#2563eb'
@@ -13,20 +12,21 @@ export default function UserForm({ user, onSubmit, onCancel }) {
 
   useEffect(() => {
     if (user) {
-      setName(user.name)
-      setEmail(user.email)
-      setRole(user.role)
+      setName(user.name || '')
+      setEmail(user.email || '')
+      setRole(user.role || 'user')
     } else {
       setName('')
       setEmail('')
-      setPassword('')
       setRole('user')
     }
   }, [user])
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    const payload = isEditing ? { name, role } : { name, email, password, role }
+    // Para convidar, enviamos nome, email e cargo.
+    // Para editar, apenas nome e cargo.
+    const payload = isEditing ? { name, role } : { name, email, role }
     onSubmit(payload)
   }
 
@@ -61,22 +61,6 @@ export default function UserForm({ user, onSubmit, onCancel }) {
           style={{ borderColor: primary, boxShadow: `0 0 0 1.5px ${primary}22` }}
         />
       </div>
-      {!isEditing && (
-        <div className="mb-4">
-          <label htmlFor="password" className="block text-sm font-medium mb-1" style={{ color: primary }}>
-            Senha
-          </label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-            className="mt-1 block w-full px-4 py-2 border rounded-lg focus:outline-none transition"
-            style={{ borderColor: primary, boxShadow: `0 0 0 1.5px ${primary}22` }}
-          />
-        </div>
-      )}
       <div className="mb-4">
         <label htmlFor="role" className="block text-sm font-medium mb-1" style={{ color: primary }}>
           Cargo
@@ -106,7 +90,7 @@ export default function UserForm({ user, onSubmit, onCancel }) {
           className="px-4 py-2 text-sm font-bold text-white rounded-lg shadow transition"
           style={{ background: primary }}
         >
-          Salvar
+          {isEditing ? 'Salvar Alterações' : 'Enviar Convite'}
         </button>
       </div>
     </form>

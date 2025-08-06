@@ -5,55 +5,61 @@ const db = require('../database');
 const auth = require('../middleware/auth');
 
 // Listar clientes/fornecedores da organização
-router.get('/', auth, (req, res) => {
-  db.all(`SELECT * FROM clients WHERE organization_id = ?`, [req.organization_id], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
+router.get('/', auth, async (req, res) => {
+  try {
+    const { rows } = await db.query('SELECT * FROM clients WHERE organization_id = $1', [req.organization_id]);
     res.json(rows);
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Criar cliente/fornecedor
-router.post('/', auth, (req, res) => {
-  const { name, cnpj, email, phone, address, type } = req.body;
-  const query = `INSERT INTO clients (name, cnpj, email, phone, address, type, organization_id, user_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+router.post('/', auth, async (req, res) => {
+  const { name, email, phone, address, type } = req.body;
+  const cnpj = req.body.cnpj || null; // Garante que CNPJ vazio seja salvo como NULL
+  const query = 'INSERT INTO clients (name, cnpj, email, phone, address, type, organization_id, user_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *';
   const params = [name, cnpj, email, phone, address, type, req.organization_id, req.userId];
 
-  db.run(query, params, function(err) {
-    if (err) {
-      if (err.message.includes('UNIQUE constraint failed')) {
-        return res.status(400).json({ error: 'CNPJ já cadastrado para esta organização.' });
-      }
-      return res.status(400).json({ error: err.message });
+  try {
+    const { rows } = await db.query(query, params);
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    if (err.code === '23505') { // UNIQUE constraint violation
+      return res.status(400).json({ error: 'CNPJ já cadastrado para esta organização.' });
     }
-    res.status(201).json({ id: this.lastID, ...req.body });
-  });
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // Atualizar cliente/fornecedor
-router.put('/:id', auth, (req, res) => {
-  const { name, cnpj, email, phone, address, type } = req.body;
-  const query = `UPDATE clients SET name = ?, cnpj = ?, email = ?, phone = ?, address = ?, type = ? WHERE id = ? AND organization_id = ?`;
+router.put('/:id', auth, async (req, res) => {
+  const { name, email, phone, address, type } = req.body;
+  const cnpj = req.body.cnpj || null; // Garante que CNPJ vazio seja salvo como NULL
+  const query = 'UPDATE clients SET name = $1, cnpj = $2, email = $3, phone = $4, address = $5, type = $6 WHERE id = $7 AND organization_id = $8 RETURNING *';
   const params = [name, cnpj, email, phone, address, type, req.params.id, req.organization_id];
 
-  db.run(query, params, function(err) {
-    if (err) {
-      if (err.message.includes('UNIQUE constraint failed')) {
-        return res.status(400).json({ error: 'CNPJ já cadastrado para esta organização.' });
-      }
-      return res.status(400).json({ error: err.message });
+  try {
+    const { rows, rowCount } = await db.query(query, params);
+    if (rowCount === 0) return res.status(404).json({ msg: "Cliente não encontrado ou não autorizado" });
+    res.json(rows[0]);
+  } catch (err) {
+    if (err.code === '23505') { // UNIQUE constraint violation
+      return res.status(400).json({ error: 'CNPJ já cadastrado para esta organização.' });
     }
-    if (this.changes === 0) return res.status(404).json({ msg: "Cliente não encontrado ou não autorizado" });
-    res.json({ id: req.params.id, ...req.body });
-  });
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // Deletar cliente/fornecedor
-router.delete('/:id', auth, (req, res) => {
-  db.run(`DELETE FROM clients WHERE id = ? AND organization_id = ?`, [req.params.id, req.organization_id], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    if (this.changes === 0) return res.status(404).json({ msg: "Cliente não encontrado ou não autorizado" });
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const { rowCount } = await db.query('DELETE FROM clients WHERE id = $1 AND organization_id = $2', [req.params.id, req.organization_id]);
+    if (rowCount === 0) return res.status(404).json({ msg: "Cliente não encontrado ou não autorizado" });
     res.status(204).send();
-  });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

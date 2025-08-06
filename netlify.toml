@@ -15,3 +15,10 @@
   from = "/api/*"
   to = "/.netlify/functions/api/:splat"
   status = 200
+
+# Regra de reescrita para Single Page Application (SPA)
+# Isso garante que o app React lide com o roteamento ao recarregar a página.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
